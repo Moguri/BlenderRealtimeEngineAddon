@@ -106,11 +106,15 @@ class RealTimeEngine():
             setattr(self, "remove_" + name, remove_func)
 
         def main_loop(scene):
+            global g_socket
+
             try:
                 self.scene_callback()
-            except ReferenceError:
+            except (ReferenceError, OSError):
                 bpy.app.handlers.scene_update_post.remove(main_loop)
-                g_socket.close()
+                if g_socket:
+                    g_socket.close()
+                    g_socket = None
                 g_process.kill()
 
 
@@ -149,7 +153,7 @@ class RealTimeEngine():
             if add_set or update_set:
                 self._scene_delta[collection_name] = add_set | update_set
 
-        if self._scene_delta:
+        if self._scene_delta and g_socket:
             socket_api.send_message(g_socket, socket_api.MethodIDs.update, socket_api.DataIDs.gltf, blendergltf.export_gltf(self._scene_delta))
 
     def view_draw(self, context):
