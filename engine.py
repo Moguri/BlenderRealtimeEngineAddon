@@ -163,7 +163,7 @@ class RealTimeEngine():
 
         vmat = view.view_matrix.copy()
         vmat_inv = vmat.inverted()
-        pmat = view.perspective_matrix * vmat_inv
+        pmat = view.perspective_matrix #* vmat_inv
 
         viewport = [region.x, region.y, region.width, region.height]
 
@@ -217,21 +217,21 @@ class RealTimeEngine():
         def togl(matrix):
             return [i for col in matrix.col for i in col]
 
-        if view_matrix != self._old_vmat:
-            self._old_vmat = view_matrix
-            data = {"data": togl(view_matrix)}
-            socket_api.send_message(g_socket,
-                                    socket_api.MethodIDs.update,
-                                    socket_api.DataIDs.view,
-                                    data)
+        #if view_matrix != self._old_vmat:
+        self._old_vmat = view_matrix
+        data = {"data": togl(view_matrix)}
+        socket_api.send_message(g_socket,
+                                socket_api.MethodIDs.update,
+                                socket_api.DataIDs.view,
+                                data)
 
-        if projection_matrix != self._old_pmat:
-            self._old_pmat = projection_matrix
-            data = {"data": togl(projection_matrix)}
-            socket_api.send_message(g_socket,
-                                    socket_api.MethodIDs.update,
-                                    socket_api.DataIDs.projection,
-                                    data)
+        #if projection_matrix != self._old_pmat:
+        self._old_pmat = projection_matrix
+        data = {"data": togl(projection_matrix)}
+        socket_api.send_message(g_socket,
+                                socket_api.MethodIDs.update,
+                                socket_api.DataIDs.projection,
+                                data)
 
         if viewport != self._old_viewport:
             self._old_viewport = viewport
